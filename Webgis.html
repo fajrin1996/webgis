@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Peta Persebaran Fasilitas kesehatan di kota Tidore Kepulauan</title>
+  <!-- Tambahkan CSS Leaflet -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <link rel="stylesheet" href="css/easy-button.css">
+  <link rel="stylesheet" href="css/sidebar-control.css">
+  <style>
+    #map {
+      height: 100vh; /* Peta akan memenuhi layar */
+    }
+    ul, ol {
+    list-style-type: none; /* Menghilangkan bullet point atau nomor */
+    padding: 0;
+    margin-top: 30px;
+    }
+
+    li {
+        margin: 10px 0;
+        padding-top: 1cm;
+        background-color: lightcoral;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+    li:hover{
+      font-size: large;
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+
+  <div id="sidebar" style="width: 390px;">
+    <ul>
+      <!-- <li id="item1">Item 1</li>
+      <li id="item2">Item 2</li>
+      <li id="item3">Item 3</li> -->
+      
+        <li id="ome">Puskesmas Ome</li>
+        <li id="tml">Puskesmas Tomalou</li>
+        <li id="tosa">Puskesmas Tosa</li>
+        <li id="ss">Puskesmas Soa Sio</li>
+        <li id="rum">Puskesmas Rum</li>
+        <li id="pbtgl">Puskesmas puskesmas pembantu galala</li>
+        <li id="gll">Puskesmas Galala</li>
+        <li id="ake">UPT Puskesmas Rawat Inap Akelamo</li>
+        <li id="tg">puskesmas Talagamory</li>
+        <li id="pyh">Puskesmas Payahe</li>
+  </ul>
+ </div>
+
+  <!-- Tambahkan JavaScript Leaflet -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="js/easy-button.js"></script>
+  <script src="js/sidebar-control.js"></script>
+  <!-- <script src="js/leaflet.ajax.js"></script> -->
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/geojson/0.2.0/geojson.js"></script>
+  <script>
+    // Inisialisasi peta 
+    var map = L.map('map').setView([0.705763, 127.379436], 12); // Koordinat Tidore
+
+    // Tambahkan lapisan peta dari OpenStreetMap
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    // Buat ikon kustom
+    var customIcon = L.icon({
+      iconUrl: 'icon/icon_RS.png', // URL gambar ikon
+     
+      iconSize: [25, 20], // Ukuran ikon [lebar, tinggi]
+      /**shadowSize:   [50, 64], // size of the shadow
+      iconAnchor: [19, 38], // Posisi anchor dari ikon (titik tengah bawah)
+      popupAnchor: [0, -30] // Posisi popup relatif terhadap ikon **/
+    });
+    var namakesmas= ['puskesmas ome', 'puskesmas tomalou', 'puskesmas tosa', 'puskesmas soa sio',
+    'puskesmas rum', 'puskesmas pembantu galala', 'puskesmas galala', 'UPT Puskesmas Rawat Inap Akelamo', 'puskesmas talagamory', 
+    'puskesmas payahe']
+    let coord = [[0.705763, 127.379436], [0.624101865578778, 127.39913386800274], [0.7427362076412747, 127.44938530428637], [0.6669277878593559, 127.45091707230401],
+    [0.7309286100410853, 127.38644938482194], [0.752108577239626, 127.5755348614342], [0.7297191044899118, 127.57125493877109],
+    [0.53397742524995, 127.54882649627697], [0.39291420117616166, 127.68996934225324], [0.3366578013548145, 127.72773993408482]]
+
+    // sidebar
+    let sidebar = L.control.sidebar('sidebar', {
+      position: 'left'
+      });
+
+      map.addControl(sidebar); 
+
+      // control easybutton
+    var easy = L.easyButton('fa-exchange', function(){
+    sidebar.toggle();
+      } ).addTo(map);
+   
+    for(let i = 0; i < coord.length; i++){
+       let marker= L.marker(coord[i], {icon: customIcon}).addTo(map).bindPopup(`<b>  ${namakesmas[i]} </b><br>`).openPopup();
+      
+
+      
+    }
+    function popUp(f,l){
+      var out = [];
+      if (f.properties){
+          for(key in f.properties){
+              out.push(key+": "+f.properties[key]);
+          }
+          l.bindPopup(out.join("<br />"));
+      }
+    }
+    var jsonTest = new L.GeoJSON.AJAX(['tidore.geojson'],{onEachFeature:popUp}).addTo(map);
+    const listItems = document.querySelectorAll('li');
+        // Menambahkan event listener pada setiap li
+        listItems.forEach(item => {
+            item.addEventListener('click', () => {
+              if(item.id === 'ome'){
+                map.flyTo([0.705763, 127.379436], 17)
+              }
+              if(item.id === 'tml'){
+                map.flyTo(coord[1], 17)
+              }
+              if(item.id === 'tosa'){
+                map.flyTo(coord[2], 17)
+              }
+              if(item.id === 'ss'){
+                map.flyTo(coord[3], 17)
+              }
+              if(item.id === 'rum'){
+                map.flyTo(coord[4], 17)
+              }
+              if(item.id === 'pbtgl'){
+                map.flyTo(coord[5], 17)
+              }
+              if(item.id === 'gll'){
+                map.flyTo(coord[6], 17)
+              }
+              if(item.id === 'ake'){
+                map.flyTo(coord[7], 17)
+              }
+              if(item.id === 'tg'){
+                map.flyTo(coord[8], 17)
+              }
+              if(item.id === 'pyh'){
+                map.flyTo(coord[9], 17)
+              }
+            });
+        });
+  </script>
+</body>
+</html>
